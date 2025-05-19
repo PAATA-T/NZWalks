@@ -50,6 +50,10 @@ namespace NZWalks.API.Controllers
             var walksDomainModel = await walkRepository.GetAllAsync(filterOn, filterQuery, sortBy,
                 isAscending ?? true, pageNumber, pageSize);
 
+            //Create an Exception
+            throw new Exception("This is a new exception");
+
+
             //Map Domain Model to Dto
             return Ok(mapper.Map<List<WalkDto>>(walksDomainModel));
         }
@@ -76,11 +80,11 @@ namespace NZWalks.API.Controllers
         [HttpPut]
         [Route("{id:Guid}")]
         [ValidateModel]
-        public async Task<IActionResult> Update([FromRoute] Guid id, UpdateRegionRequestDto updateRegionRequestDto)
+        public async Task<IActionResult> Update([FromRoute] Guid id, UpdateWalkRequestDto updateWalkRequestDto)
         {
 
             //Map DTO to Domain Model
-            var walkDomainModel = mapper.Map<Walk>(updateRegionRequestDto);
+            var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
 
             walkDomainModel = await walkRepository.UpdateAsync(id, walkDomainModel);
 

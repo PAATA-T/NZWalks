@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,33 +14,47 @@ namespace NZWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class RegionsController : ControllerBase
     {
         private readonly NZwalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<RegionsController> logger;
 
-        public RegionsController(NZwalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionsController(NZwalksDbContext dbContext, 
+            IRegionRepository regionRepository, 
+            IMapper mapper,
+            ILogger<RegionsController> logger)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
         // GET ALL REGIONS
         // GET https://localhost:portnumber/api/regions/{id}
         [HttpGet]
         public async Task<IActionResult> GetAll() 
         {
+
+
             //Get Data From DataBase - Domain models
             var regionsDomain = await regionRepository.GetAllAsync();
 
             //Map Domain Models to DTOs
-            
+
+            logger.LogInformation($"Finished GetAllRegions request with data: {JsonSerializer.Serialize(regionsDomain)}");
+
             var regionsDto = mapper.Map<List<RegionDto>>(regionsDomain);
-            
+
+
             //return DTOs
             return Ok(regionsDto);
+            
+           
+
+            
 
         }
 
@@ -50,6 +65,8 @@ namespace NZWalks.API.Controllers
 
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
+            throw new Exception("This is a new exception");
+
             var regionDomain = await regionRepository.GetByIdAsync(id);
 
             if (regionDomain == null) 
